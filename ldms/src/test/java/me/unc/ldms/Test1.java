@@ -121,15 +121,15 @@ public class Test1 {
                 matrix[i][j] = AppConstant.MAX_VALUE;
             }
         }
-        matrix[0][1] = 6;
-        matrix[1][2] = 5;
-        matrix[0][3] = 2;
-        matrix[3][1] = 7;
-        matrix[3][4] = 5;
-        matrix[1][5] = 3;
-        matrix[4][5] = 5;
-        matrix[4][6] = 1;
-        matrix[5][2] = 2;
+        matrix[0][1] = 2;
+        matrix[0][2] = 7;
+        matrix[1][5] = 7;
+        matrix[2][5] = 1;
+        matrix[2][3] = 4;
+        matrix[3][0] = 6;
+        matrix[3][4] = 1;
+        matrix[4][6] = 3;
+        matrix[5][6] = 2;
 
         DijkstraAlgorithm.dijkstra(matrix, 0);
 

@@ -277,6 +277,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public OrderVO selectOrderVO(String oid) {
+        log.info("calling OrderService [selectOrderVO]");
         OrderVO orderVO = null;
         Map<Object, Object> map = redisTemplate.opsForHash().entries(oid);
         if (!map.isEmpty()) {

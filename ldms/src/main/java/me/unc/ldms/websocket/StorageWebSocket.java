@@ -54,9 +54,9 @@ public class StorageWebSocket {
      */
     @OnClose
     public void onClose() {
-        log.info("连接关闭：sid=" + sid + " 当前在线人数" + getOnlineCount());
         webSockets.remove(this);
         subOnlineCount();
+        log.info("连接关闭：sid=" + sid + " 当前在线人数" + getOnlineCount());
     }
 
     /**
