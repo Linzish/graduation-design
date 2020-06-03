@@ -62,9 +62,14 @@ public class OrderUtil {
         } else {
             reorder = order;
             for (String s : diff) {
-                Field of = Order.class.getDeclaredField(s);
+                Field of, ovf;
+                try {
+                    of = Order.class.getDeclaredField(s);
+                    ovf = OrderVO.class.getDeclaredField(s);
+                } catch (NoSuchFieldException e) {
+                    continue;
+                }
                 of.setAccessible(true);
-                Field ovf = OrderVO.class.getDeclaredField(s);
                 ovf.setAccessible(true);
                 if (!ENUM_MAP.containsKey(s)) {
                     of.set(reorder, ovf.get(orderVO));
@@ -113,9 +118,14 @@ public class OrderUtil {
         } else {
             reorderDetail = orderDetail;
             for (String s : diff) {
-                Field odf = OrderDetail.class.getDeclaredField(s);
+                Field odf, ovf;
+                try {
+                    odf = OrderDetail.class.getDeclaredField(s);
+                    ovf = OrderVO.class.getDeclaredField(s);
+                } catch (NoSuchFieldException e) {
+                    continue;
+                }
                 odf.setAccessible(true);
-                Field ovf = OrderVO.class.getDeclaredField(s);
                 ovf.setAccessible(true);
                 if (!ENUM_MAP.containsKey(s)) {
                     odf.set(reorderDetail, ovf.get(orderVO));

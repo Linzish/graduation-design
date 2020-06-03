@@ -1,6 +1,7 @@
 package me.unc.ldms.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,6 +30,8 @@ public class User implements Serializable {
     private String phone;       //手机
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date time;          //注册时间
+    @TableField(value = "real_name")
+    private String realName;    //真实姓名
     private int enable;     //是否可用
 
 //    public void setTime(Date time) throws ParseException {

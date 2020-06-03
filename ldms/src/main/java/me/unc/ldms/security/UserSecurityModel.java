@@ -43,4 +43,38 @@ public class UserSecurityModel extends User {
         this.userMain = userMain;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    /*@Override
+    public boolean equals(Object rhs) {
+        return this.toString().equals(rhs.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return user.getUid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return user.getUid();
+    }*/
 }

@@ -87,6 +87,16 @@ public class OrderController {
     }
 
     /**
+     * 根据id查询订单
+     * @param oid 订单id
+     * @return Order
+     */
+    @GetMapping("/order")
+    public Order selectByOid(String oid) {
+        return orderService.getOrderByOid(oid);
+    }
+
+    /**
      * 置订单失效接口（逻辑删除）
      * @param oid 订单id
      * @return 统一请求回应

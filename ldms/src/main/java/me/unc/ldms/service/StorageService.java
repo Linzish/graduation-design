@@ -17,9 +17,9 @@ public interface StorageService {
 
     void collectionNotify(ConsumerRecord<String, String> record);
 
-    boolean storage(String wid, String oid);
+    boolean storage(String wid, String oid, String createBy);
 
-    boolean outbound(String wid, String oid, String tid);
+    boolean outbound(String wid, String oid, String tid, String uid, String createBy);
 
     boolean modifyStorageMsg(Storage storage);
 

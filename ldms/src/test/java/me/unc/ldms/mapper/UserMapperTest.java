@@ -52,11 +52,12 @@ public class UserMapperTest {
     @Test
     public void insert1() throws ParseException {
         User user = new User();
-        user.setUid("zj0002");
-        user.setUsername("zj0002");
+        user.setUid("zj0002_001");
+        user.setUsername("zj0002_001");
         user.setPassword(passwordEncoder.encode("123456"));
         user.setPhone("12345678910");
         user.setTime(new Date());
+        user.setRealName("湛江0002员工001");
         userMapper.insert(user);
         System.out.println(user);
     }

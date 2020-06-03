@@ -6,9 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.BeanUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import me.unc.ldms.dto.Distribution;
 import me.unc.ldms.dto.Order;
 import me.unc.ldms.dto.OrderDetail;
+import me.unc.ldms.mapper.DistributionMapper;
 import me.unc.ldms.mapper.OrderDetailMapper;
 import me.unc.ldms.mapper.OrderMapper;
 import me.unc.ldms.order.*;
@@ -51,6 +55,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private DistributionMapper distributionMapper;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -114,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         if (orderVO.getWeight() > 0.5) {  //超重
             orderDetailGen = new OutOfStanderWeightOrderDetailGenerator(orderDetailGen);
             orderDetail = orderDetailGen.generateOrderDetail(order, orderVO);
-        } else if (orderVO.getPackaging().equals(Packaging.NO_PACKAGING.getValue())) {  //包装
+        } else if (Packaging.NO_PACKAGING.getValue().equals(orderVO.getPackaging())) {  //包装
             orderDetailGen = new PackagingOrderDetailGenerator(orderDetailGen);
             orderDetail = orderDetailGen.generateOrderDetail(order, orderVO);
         } else if (orderVO.getValuation() > 0) {  //保价
@@ -157,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
         //redisTemplate.expire(orderVO.getOid(), 240, TimeUnit.SECONDS); //测试用
 
         //存mysql
+        order.setEnable(1);
         orderMapper.insert(order);
         orderDetailMapper.insert(orderDetail);
 
@@ -247,17 +254,47 @@ public class OrderServiceImpl implements OrderService {
      * @param oid 订单id
      */
     @Override
+    @Transactional
     public boolean completeOrder(String oid) {
         log.info("calling OrderService [completeOrder]");
         Order order = getOrderByOid(oid);
         order.setStatus(Status.COMPLETE.ordinal());
-        int i = orderMapper.updateById(order);
+
         //记录物流信息
         redisTemplate.opsForList().rightPushAll(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_SUFFIX,
                 GeneralUtils.parseDateToStr(new Date(), "yyyy-MM-dd hh:mm"), "已签收");
-        //TODO -设置一些redis数据失效
+        //持久化物流信息
+        List<Map<String, String>> msgList = new ArrayList<>();
+        List<Object> list = redisTemplate.opsForList().range(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_SUFFIX, 0, -1);
+        Map<String, String> trackingMsg;
+        for (int i = 0; i < list.size(); i+=2) {
+            trackingMsg = new HashMap<>();
+            trackingMsg.put("time", (String) list.get(i));
+            trackingMsg.put("msg", (String) list.get(i + 1));
+            msgList.add(trackingMsg);
+        }
+        ObjectMapper om = new ObjectMapper();
+        String dbTrackingMsg;
+        try {
+            dbTrackingMsg = om.writeValueAsString(msgList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("签收失败", e);
+        }
 
-        return i == 1;
+        //持久化
+        Distribution distribution = distributionMapper.selectOne(new QueryWrapper<Distribution>().eq("oid", oid));
+        distribution.setTrackingMsg(dbTrackingMsg);
+        int j = distributionMapper.updateById(distribution);
+        int i = orderMapper.updateById(order);
+
+        //设置一些redis数据失效
+//        redisTemplate.expire(oid + AppConstant.ORDER_DISTRIBUTION_DATA_SUFFIX, 24, TimeUnit.HOURS);
+//        redisTemplate.expire(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_SUFFIX, 24, TimeUnit.HOURS);
+//        redisTemplate.expire(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_INDEX_SUFFIX, 24, TimeUnit.HOURS);
+//        redisTemplate.expire(oid, 24, TimeUnit.HOURS);
+//        redisTemplate.expire(oid + AppConstant.REDIS_ORDER_ADDRESS_DATA_SUFFIX, 24, TimeUnit.HOURS);
+
+        return i == 1 && j == 1;
     }
 
     /**

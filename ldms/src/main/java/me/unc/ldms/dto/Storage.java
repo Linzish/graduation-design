@@ -37,6 +37,8 @@ public class Storage implements Serializable {
     private int disable;                 //删除标记
     private String tid;                  //运输id
     @TableField(value = "create_by")
-    private String createBy;             //处理人
+    private String createBy;             //入库处理人
+    @TableField(value = "out_by")
+    private String outBy;             //出库处理人
 
 }

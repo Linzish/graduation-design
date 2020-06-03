@@ -40,7 +40,7 @@ public class StorageServiceTest {
         /*if (storageService.storage("zj0005", "202003041586109084")) {
             System.out.println("ok");
         }*/
-        if (storageService.storage("zj0002", "202003041586109084")) {
+        if (storageService.storage("zj0002", "202003041586109084", null)) {
             System.out.println("ok");
         }
 
@@ -59,7 +59,7 @@ public class StorageServiceTest {
         /*if (storageService.outbound("zj0005", "202003041586109084", null)) {
             System.out.println("ok");
         }*/
-        if (storageService.outbound("zj0002", "202003041586109084", null)) {
+        if (storageService.outbound("zj0002", "202003041586109084", null, null, null)) {
             System.out.println("ok");
         }
 

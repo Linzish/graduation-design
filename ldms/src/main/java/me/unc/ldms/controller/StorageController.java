@@ -36,9 +36,9 @@ public class StorageController {
      * @return 统一请求回应
      */
     @PostMapping("/inBound")
-    public Result inBound(String oid, String wid) {
+    public Result inBound(String oid, String wid, String createBy) {
         try {
-            if (storageService.storage(wid, oid)) {
+            if (storageService.storage(wid, oid, createBy)) {
                 return ResultBuilder.successResultOnly("入库成功");
             } else {
                 return ResultBuilder.failResult("入库失败");
@@ -56,9 +56,9 @@ public class StorageController {
      * @return 统一请求回应
      */
     @PostMapping("/outBound")
-    public Result outBound(String oid, String wid, String tid) {
+    public Result outBound(String oid, String wid, String tid, String uid, String createBy) {
         try {
-            if (storageService.outbound(wid, oid, tid)) {
+            if (storageService.outbound(wid, oid, tid, uid, createBy)) {
                 return ResultBuilder.successResultOnly("出库成功");
             } else {
                 return ResultBuilder.failResult("出库失败");

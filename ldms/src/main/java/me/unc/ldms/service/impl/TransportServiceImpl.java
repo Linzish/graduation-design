@@ -7,9 +7,11 @@ import me.unc.ldms.dto.WareHouse;
 import me.unc.ldms.mapper.TransportMapper;
 import me.unc.ldms.mapper.WareHouseMapper;
 import me.unc.ldms.service.TransportService;
+import me.unc.ldms.utils.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +37,9 @@ public class TransportServiceImpl implements TransportService {
     @Override
     public boolean addTransportPlan(Transport transport) {
         log.info("calling TransportService [addTransportPlan]");
+        String dateId = GeneralUtils.parseToYYYYMMDDStr(new Date());
+        int hash = GeneralUtils.genHash(transport.getCarId() + ":" + transport.getDescription());
+        transport.setTid(dateId + hash);
         return transportMapper.insert(transport) == 1;
     }
 

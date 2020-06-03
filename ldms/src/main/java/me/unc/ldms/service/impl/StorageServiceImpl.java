@@ -10,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import me.unc.ldms.distribution.DijkstraAlgorithm;
 import me.unc.ldms.dto.Distribution;
 import me.unc.ldms.dto.Storage;
+import me.unc.ldms.dto.User;
 import me.unc.ldms.dto.WareHouse;
 import me.unc.ldms.mapper.DistributionMapper;
 import me.unc.ldms.mapper.StorageMapper;
+import me.unc.ldms.mapper.UserMapper;
 import me.unc.ldms.mapper.WareHouseMapper;
 import me.unc.ldms.service.StorageService;
 import me.unc.ldms.utils.AppConstant;
@@ -49,6 +51,8 @@ import java.util.stream.Collectors;
 @Service
 public class StorageServiceImpl implements StorageService {
 
+    @Autowired
+    private UserMapper userMapper;
     @Autowired
     private StorageMapper storageMapper;
     @Autowired
@@ -105,11 +109,12 @@ public class StorageServiceImpl implements StorageService {
      */
     @Override
     @Transactional
-    public boolean storage(String wid, String oid) {
+    public boolean storage(String wid, String oid, String createBy) {
         log.info("calling StorageService [storage]");
         Storage storage = new Storage();
         storage.setWid(wid);
         storage.setOid(oid);
+        storage.setCreateBy(createBy);
         storage.setInDate(new Date());
         if (!Objects.equals(redisTemplate.opsForValue().get(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_INDEX_SUFFIX), 3)) {
             storage.setIsTurn(1);
@@ -145,13 +150,14 @@ public class StorageServiceImpl implements StorageService {
      */
     @Override
     @Transactional
-    public boolean outbound(String wid, String oid, String tid) {
+    public boolean outbound(String wid, String oid, String tid, String uid, String createBy) {
         log.info("calling StorageService [outbound]");
         Storage storage = storageMapper.selectOne(new QueryWrapper<Storage>().eq("wid", wid).eq("oid", oid).eq("disable", 0));
         //修改数据库
         storage.setOutDate(new Date());
         storage.setIsOut(1);
         storage.setTid(tid);
+        storage.setOutBy(createBy);
         int i = storageMapper.updateById(storage);
         //redis记录物流信息
         String name1 = wareHouseMapper.getNameByWid(wid);
@@ -162,8 +168,10 @@ public class StorageServiceImpl implements StorageService {
             redisTemplate.opsForList().rightPushAll(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_SUFFIX,
                     GeneralUtils.parseDateToStr(new Date(), "yyyy-MM-dd hh:mm"), distributionTrackingMsgFormatter(name1, name2, 2));
         } else {
+            //uid
+            User user = userMapper.selectOne(new QueryWrapper<User>().eq("uid", uid));
             redisTemplate.opsForList().rightPushAll(oid + AppConstant.ORDER_DISTRIBUTION_TRACKING_SUFFIX,
-                    GeneralUtils.parseDateToStr(new Date(), "yyyy-MM-dd hh:mm"), distributionTrackingMsgFormatter(name1, null, 3));
+                    GeneralUtils.parseDateToStr(new Date(), "yyyy-MM-dd hh:mm"), distributionTrackingMsgFormatter(name1, user.getRealName() + "-" + user.getPhone(), 3));
         }
 
         return i == 1;
@@ -466,7 +474,8 @@ public class StorageServiceImpl implements StorageService {
         } else if (flag == 2) {
             return "离开【" + start + "】，下一站【" + end + "】";
         } else if (flag == 3) {
-            return "【" + start + "】安排配送";
+            String[] split = end.split("-");
+            return "【" + start + "】安排配送，配送员【" + split[0] + "】，" + "电话【" + split[1] + "】";
         }
         return "";
     }

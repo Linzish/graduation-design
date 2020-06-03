@@ -202,4 +202,21 @@ public class UserServiceImpl implements UserService {
         log.info("Calling UserService [loadAllRole]");
         return roleMapper.selectList(new QueryWrapper<Role>());
     }
+
+    /**
+     * 查询仓储点员工
+     * @param wid 仓储点id
+     * @return 仓储点员工列表
+     */
+    @Override
+    public List<User> listUserByWid(String wid) {
+        log.info("Calling UserService [listUserByWid]");
+        List<UserMain> userMains = userMainMapper.selectList(new QueryWrapper<UserMain>().select("uid").eq("wid", wid));
+        List<User> users = new ArrayList<>();
+        for (UserMain userMain : userMains) {
+            User user = userMapper.selectOne(new QueryWrapper<User>().eq("uid", userMain.getUid()));
+            users.add(user);
+        }
+        return users;
+    }
 }

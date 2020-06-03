@@ -16,7 +16,7 @@ import java.util.List;
  * @version v1.0
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class UserServiceTest {
 
     @Autowired
@@ -25,6 +25,12 @@ public class UserServiceTest {
     @Test
     public void selectAllUser() {
         List<User> users = userService.loadAllUser();
+        users.forEach(System.out::println);
+    }
+
+    @Test
+    public void selectUserByWid() {
+        List<User> users = userService.listUserByWid("zj0002");
         users.forEach(System.out::println);
     }
 

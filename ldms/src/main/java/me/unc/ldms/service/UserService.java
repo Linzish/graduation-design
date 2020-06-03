@@ -40,6 +40,6 @@ public interface UserService {
 
     List<Role> loadAllRole();
 
-
+    List<User> listUserByWid(String wid);
 
 }

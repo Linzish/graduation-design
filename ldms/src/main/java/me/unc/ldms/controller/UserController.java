@@ -7,10 +7,10 @@ import me.unc.ldms.service.UserService;
 import me.unc.ldms.utils.AppConstant;
 import me.unc.ldms.utils.SnowflakeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,6 +20,7 @@ import java.util.UUID;
  * @version v1.0
  */
 @RestController
+@RequestMapping("user")
 public class UserController {
 
     @Autowired
@@ -52,6 +53,16 @@ public class UserController {
                 return ResultBuilder.failResult("注册失败");
             }
         }
+    }
+
+    @GetMapping("/usersInWid/{wid}")
+    public List<User> getUserByWid(@PathVariable String wid) {
+        return userService.listUserByWid(wid);
+    }
+
+    @GetMapping("/users")
+    public List<User> listUser() {
+        return userService.loadAllUser();
     }
 
 }
