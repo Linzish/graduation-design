@@ -1,5 +1,6 @@
 package me.unc.ldms.controller;
 
+import me.unc.ldms.dto.Distribution;
 import me.unc.ldms.service.DistributionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,11 @@ public class DistributionController {
     @GetMapping("/distributionMsg")
     public Map<String, Object> getDistributionMsg(String oid) {
         return distributionService.getDistributionMsg(oid);
+    }
+
+    @GetMapping("/orderDistributionMsg")
+    public Distribution getOrderDistributionMsg(String oid) {
+        return distributionService.getOrderDistributionMsg(oid);
     }
 
 }

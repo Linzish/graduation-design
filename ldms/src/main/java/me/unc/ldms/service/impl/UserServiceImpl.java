@@ -50,7 +50,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(String username, String password) {
         log.info("Calling UserService [login]");
-        return userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        User loginWithUsername = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        if (loginWithUsername != null) {
+            return loginWithUsername;
+        } else {
+            return userMapper.selectOne(new QueryWrapper<User>().eq("phone", username));
+        }
     }
 
     /**
@@ -84,6 +89,7 @@ public class UserServiceImpl implements UserService {
     public boolean addUser(User user) {
         log.info("Calling UserService [addUser]");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRealName(user.getUsername());
         UserMain userMain = new UserMain();
         userMain.setUid(user.getUid());
         return userMapper.insert(user) == 1 && userMainMapper.insert(userMain) == 1;
@@ -99,6 +105,7 @@ public class UserServiceImpl implements UserService {
     public boolean addUserWithWid(User user, String wid) {
         log.info("Calling UserService [addUserWithWid]");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRealName(user.getUsername());
         UserMain userMain = new UserMain();
         userMain.setUid(user.getUid());
         userMain.setWid(wid);

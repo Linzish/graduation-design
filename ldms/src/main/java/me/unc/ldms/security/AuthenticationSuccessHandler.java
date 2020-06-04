@@ -69,6 +69,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         LoginMsg loginMsg = new LoginMsg(userModel.getUsername(), targetUrl);
         loginMsg.setWid(userMain.getWid());
         loginMsg.setUsername(user.getUsername());
+        loginMsg.setPhone(user.getPhone());
 
         Result result = ResultBuilder.buildResult(StateType.OK, "登录成功", loginMsg);
         ObjectMapper om = new ObjectMapper();

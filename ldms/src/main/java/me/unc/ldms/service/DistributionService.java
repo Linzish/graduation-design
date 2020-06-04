@@ -1,5 +1,7 @@
 package me.unc.ldms.service;
 
+import me.unc.ldms.dto.Distribution;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,5 +18,7 @@ public interface DistributionService {
     void acceptOrder(String oidKey);
 
     Map<String, Object> getDistributionMsg(String oid);
+
+    Distribution getOrderDistributionMsg(String oid);
 
 }

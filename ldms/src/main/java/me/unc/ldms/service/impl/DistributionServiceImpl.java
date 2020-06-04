@@ -1,7 +1,11 @@
 package me.unc.ldms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import me.unc.ldms.dto.Distribution;
+import me.unc.ldms.dto.WareHouse;
 import me.unc.ldms.mapper.DistributionMapper;
+import me.unc.ldms.mapper.WareHouseMapper;
 import me.unc.ldms.service.DistributionService;
 import me.unc.ldms.utils.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,8 @@ public class DistributionServiceImpl implements DistributionService {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private DistributionMapper distributionMapper;
+    @Autowired
+    private WareHouseMapper wareHouseMapper;
 
     /**
      * 物流信息跟踪
@@ -91,6 +97,27 @@ public class DistributionServiceImpl implements DistributionService {
         map.put("end", end);
 
         return map;
+    }
+
+    /**
+     * 获取订单物流路径信息
+     * @param oid 订单id
+     * @return 订单物流路径信息
+     */
+    @Override
+    public Distribution getOrderDistributionMsg(String oid) {
+        Distribution distribution = distributionMapper.selectOne(new QueryWrapper<Distribution>().eq("oid", oid));
+        WareHouse startWarehouse = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getStartWarehouse()));
+        WareHouse startPoint = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getStartPoint()));
+        WareHouse endWarehouse = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getEndWarehouse()));
+        WareHouse endPoint = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getEndPoint()));
+
+        distribution.setStartWarehouse(startWarehouse.getAddress());
+        distribution.setStartPoint(startPoint.getAddress());
+        distribution.setEndWarehouse(endWarehouse.getAddress());
+        distribution.setEndPoint(endPoint.getAddress());
+
+        return distribution;
     }
 
 }

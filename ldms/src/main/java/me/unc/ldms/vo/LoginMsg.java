@@ -15,6 +15,7 @@ public class LoginMsg {
     private String targetUrl;
     private String wid;
     private String username;
+    private String phone;
 
     public LoginMsg(String uid, String targetUrl) {
         this.uid = uid;
