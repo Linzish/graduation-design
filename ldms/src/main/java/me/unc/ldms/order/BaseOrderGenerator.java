@@ -34,6 +34,7 @@ public abstract class BaseOrderGenerator implements IOrder {
         this.order.setStartAddress(orderVO.getStartAddress());
         this.order.setDestinationAddress(orderVO.getDestinationAddress());
         this.order.setStatus(Status.AUDIT.ordinal());
+        this.order.setToUid(orderVO.getDestinationName());
         Date date = new Date();
         this.order.setGenDate(date);
 

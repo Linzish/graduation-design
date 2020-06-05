@@ -188,6 +188,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 根据用户查询用户待签收订单
+     * @param uid 用户id
+     * @param enable 是否可用
+     * @return 用户待签收订单
+     */
+    @Override
+    public List<Order> getOrdersByToUid(String uid, boolean enable) {
+        log.info("calling OrderService [getOrdersByToUid]");
+        if (enable) {
+            return orderMapper.selectList(new QueryWrapper<Order>().eq("to_uid", uid).eq("enable", 1));
+        } else {
+            return orderMapper.selectList(new QueryWrapper<Order>().eq("to_uid", uid).eq("enable", 0));
+        }
+    }
+
+    /**
      * 审核订单
      * @param oid 订单id
      */
@@ -207,6 +223,17 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> listDisableOrders() {
         log.info("calling OrderService [listDisableOrders]");
         return orderMapper.selectList(new QueryWrapper<Order>().eq("enable", 0));
+    }
+
+    /**
+     * 查询用户失效订单
+     * @param uid 用户id
+     * @return 失效订单集合
+     */
+    @Override
+    public List<Order> listDisableOrdersByUid(String uid) {
+        log.info("calling OrderService [listDisableOrdersByUid]");
+        return orderMapper.selectList(new QueryWrapper<Order>().eq("uid", uid).eq("enable", 0));
     }
 
     /**

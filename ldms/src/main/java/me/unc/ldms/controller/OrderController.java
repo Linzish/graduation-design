@@ -60,11 +60,22 @@ public class OrderController {
 
     /**
      * 根据用户列出所有订单接口
+     * @param uid 用户id
      * @return 订单集合
      */
     @GetMapping("/listOrderByUser")
     public List<Order> listOrderByUser(String uid) {
         return orderService.getOrdersByUid(uid, true);
+    }
+
+    /**
+     * 查看待签收订单
+     * @param uid 用户名
+     * @return 订单集合
+     */
+    @GetMapping("/listOrderByToUser")
+    public List<Order> listOrderByToUser(String uid) {
+        return orderService.getOrdersByToUid(uid, true);
     }
 
     /**
@@ -74,6 +85,15 @@ public class OrderController {
     @GetMapping("/listDisableOrder")
     public List<Order> listDisableOrder() {
         return orderService.listDisableOrders();
+    }
+
+    /**
+     * 列出所有失效订单接口
+     * @return 失效订单集合
+     */
+    @GetMapping("/listDisableOrderByUid")
+    public List<Order> listDisableOrderByUid(String uid) {
+        return orderService.listDisableOrdersByUid(uid);
     }
 
     /**

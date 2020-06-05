@@ -23,6 +23,8 @@ public class Order implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;                           //主键id
     private String uid;                       //用户id
+    @TableField(value = "to_uid")
+    private String toUid;                     //签收用户id
     private String oid;                       //订单id
     private int status;                       //订单状态
     @TableField(value = "start_address")

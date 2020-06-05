@@ -22,9 +22,13 @@ public interface OrderService {
 
     List<Order> getOrdersByUid(String uid, boolean enable);
 
+    List<Order> getOrdersByToUid(String uid, boolean enable);
+
     void audit(String oid);
 
     List<Order> listDisableOrders();
+
+    List<Order> listDisableOrdersByUid(String uid);
 
     boolean deleteById(String oid);
 
