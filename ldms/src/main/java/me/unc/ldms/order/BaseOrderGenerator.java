@@ -39,7 +39,7 @@ public abstract class BaseOrderGenerator implements IOrder {
         this.order.setGenDate(date);
 
         String str = GeneralUtils.parseToYYYYMMDDStr(date);
-        int hash = GeneralUtils.genHash(str + orderVO.getUid());
+        int hash = GeneralUtils.genHash(str + orderVO.getUid() + "-" + System.currentTimeMillis());
         this.order.setOid(str + hash);
 
         return this.order;

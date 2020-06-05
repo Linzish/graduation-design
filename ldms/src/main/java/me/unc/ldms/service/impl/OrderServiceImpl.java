@@ -285,6 +285,12 @@ public class OrderServiceImpl implements OrderService {
     public boolean completeOrder(String oid) {
         log.info("calling OrderService [completeOrder]");
         Order order = getOrderByOid(oid);
+
+        //防止重签
+        if (order.getStatus() == Status.COMPLETE.ordinal()) {
+            return true;
+        }
+
         order.setStatus(Status.COMPLETE.ordinal());
 
         //记录物流信息
@@ -311,6 +317,9 @@ public class OrderServiceImpl implements OrderService {
         //持久化
         Distribution distribution = distributionMapper.selectOne(new QueryWrapper<Distribution>().eq("oid", oid));
         distribution.setTrackingMsg(dbTrackingMsg);
+        if (distribution.getTracking() == 4) {
+            distribution.setTracking(distribution.getTracking() + 1);
+        }
         int j = distributionMapper.updateById(distribution);
         int i = orderMapper.updateById(order);
 

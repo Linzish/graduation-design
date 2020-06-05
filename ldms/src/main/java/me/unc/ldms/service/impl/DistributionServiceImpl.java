@@ -106,6 +106,7 @@ public class DistributionServiceImpl implements DistributionService {
      */
     @Override
     public Distribution getOrderDistributionMsg(String oid) {
+        log.info("calling DistributionService [getOrderDistributionMsg]");
         Distribution distribution = distributionMapper.selectOne(new QueryWrapper<Distribution>().eq("oid", oid));
         WareHouse startWarehouse = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getStartWarehouse()));
         WareHouse startPoint = wareHouseMapper.selectOne(new QueryWrapper<WareHouse>().select("address").eq("wid", distribution.getStartPoint()));
